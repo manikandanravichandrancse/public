@@ -1,0 +1,40 @@
+/* Reset default browser styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body styling */
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  min-height: 100vh;
+}
+
+/* AppBar overrides */
+.MuiAppBar-root {
+  background-color: #1976d2;
+}
+
+/* Container adjustments */
+.MuiContainer-root {
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+/* Button overrides */
+.MuiButton-root {
+  text-transform: none;
+}
+
+/* Typography overrides */
+.MuiTypography-h4 {
+  font-weight: 600;
+}
+
+/* Paper elevation override */
+.MuiPaper-elevation3 {
+  border-radius: 8px;
+}

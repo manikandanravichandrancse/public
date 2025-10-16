@@ -1,0 +1,47 @@
+/* Global resets */
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+/* Utility classes */
+.mt-2 {
+  margin-top: 16px;
+}
+
+.mb-2 {
+  margin-bottom: 16px;
+}
+
+/* Link styling */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Feedback list grid */
+.feedback-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* Feedback card content */
+.feedback-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Form fields spacing */
+.form-field {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+/* Rating box alignment */
+.rating-box {
+  display: flex;
+  align-items: center;
+  margin: 16px 0;
+}
