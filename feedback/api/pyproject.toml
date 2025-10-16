@@ -1,0 +1,26 @@
+[project]
+name = "feedback-app"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "manikandan",email = "contactmanikandanravichandran@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi (>=0.119.0,<0.120.0)",
+    "uvicorn (>=0.37.0,<0.38.0)",
+    "sqlalchemy (>=2.0.44,<3.0.0)",
+    "pydantic[email] (>=2.12.2,<3.0.0)",
+    "pydantic-settings (>=2.11.0,<3.0.0)",
+    "alembic (>=1.17.0,<2.0.0)"
+]
+
+[tool.poetry]
+packages = [
+  { include = "feedback_app" }
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

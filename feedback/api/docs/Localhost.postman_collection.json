@@ -1,0 +1,88 @@
+{
+	"info": {
+		"_postman_id": "8cb36e7d-d8d2-40f0-91f3-2d0553888b67",
+		"name": "Localhost",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31400596",
+		"_collection_link": "https://findmyjobz.postman.co/workspace/FindMyJobz-Workspace~8b955637-489f-44e8-b15b-803b35660057/collection/31400596-8cb36e7d-d8d2-40f0-91f3-2d0553888b67?action=share&source=collection_link&creator=31400596"
+	},
+	"item": [
+		{
+			"name": "Feedback APP",
+			"item": [
+				{
+					"name": "Feedback",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/api/latest/feedback",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"latest",
+								"feedback"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Feedback",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Manikandan\",\r\n    \"email\": \"mani@example.com\",\r\n    \"message\": \"Great app!\",\r\n    \"rating\": 5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/latest/feedback",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"latest",
+								"feedback"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/api/latest/health",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"latest",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
