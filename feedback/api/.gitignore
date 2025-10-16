@@ -10,10 +10,10 @@ venv/
 .poetry/
 
 # Environment variables
-.env
+# .env
 
 # SQLite database
-*.db
+# *.db
 
 # Alembic
 alembic/versions/*.pyc

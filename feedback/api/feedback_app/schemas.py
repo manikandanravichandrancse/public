@@ -84,21 +84,3 @@ class FeedbackResponse(FeedbackBase):
             }
         }
     }
-
-
-class FeedbackListResponse(BaseModel):
-    """
-    Schema for paginated feedback list response.
-
-    Attributes:
-        total (int): Total number of feedback entries.
-        skip (int): Number of records skipped.
-        limit (int): Maximum records returned.
-        data (list[FeedbackResponse]): List of feedback entries.
-    """
-    total: int = Field(..., description="Total feedback count")
-    skip: int = Field(..., description="Records skipped")
-    limit: int = Field(..., description="Records limit")
-    data: list[FeedbackResponse] = Field(..., description="Feedback entries")
-
-    model_config = {"from_attributes": True}
