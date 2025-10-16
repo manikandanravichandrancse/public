@@ -1,10 +1,9 @@
 {
 	"info": {
-		"_postman_id": "8cb36e7d-d8d2-40f0-91f3-2d0553888b67",
-		"name": "Localhost",
+		"_postman_id": "009d4c35-51dc-4065-ac92-213f33da9a6b",
+		"name": "Interview",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "31400596",
-		"_collection_link": "https://findmyjobz.postman.co/workspace/FindMyJobz-Workspace~8b955637-489f-44e8-b15b-803b35660057/collection/31400596-8cb36e7d-d8d2-40f0-91f3-2d0553888b67?action=share&source=collection_link&creator=31400596"
+		"_exporter_id": "28046905"
 	},
 	"item": [
 		{
@@ -56,27 +55,6 @@
 								"api",
 								"latest",
 								"feedback"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Health",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8000/api/latest/health",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"api",
-								"latest",
-								"health"
 							]
 						}
 					},
