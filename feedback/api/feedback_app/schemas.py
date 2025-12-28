@@ -21,6 +21,7 @@ class FeedbackBase(BaseModel):
     """
     name: Optional[str] = Field(None, max_length=50, description="Name of the person")
     email: Optional[EmailStr] = Field(None, description="Email address")
+    mobile: Optional[str] = Field(None, max_length=13, description="Mobile number of the person")
     message: str = Field(
         ...,
         min_length=10,
@@ -79,6 +80,7 @@ class FeedbackResponse(FeedbackBase):
                 "id": 1,
                 "name": "John Doe",
                 "email": "john@example.com",
+                "mobile": "+919999999999",
                 "message": "Great service! Really enjoyed the experience.",
                 "rating": 5
             }

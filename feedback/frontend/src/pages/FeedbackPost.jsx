@@ -14,6 +14,7 @@ export default function FeedbackPost() {
     initialValues: {
       name: '',
       email: '',
+      mobile: '',
       message: '',
       rating: 0,
     },
@@ -26,6 +27,7 @@ export default function FeedbackPost() {
         .min(10, 'Message must be at least 10 characters')
         .max(500, 'Message cannot exceed 500 characters')
         .required('Message is required'),
+      mobile: Yup.string().required('Mobile Number is required'),
       rating: Yup.number()
         .min(1, 'Rating must be greater than zero')
         .required('Rating is required'),
@@ -74,6 +76,17 @@ export default function FeedbackPost() {
             margin="normal"
             error={formik.touched.email && Boolean(formik.errors.email)}
             helperText={formik.touched.email && formik.errors.email}
+          />
+          <TextField
+            fullWidth
+            label="Mobile"
+            name="mobile"
+            value={formik.values.mobile}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            margin="normal"
+            error={formik.touched.mobile && Boolean(formik.errors.mobile)}
+            helperText={formik.touched.mobile && formik.errors.mobile}
           />
           <TextField
             fullWidth

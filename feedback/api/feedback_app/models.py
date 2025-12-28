@@ -28,6 +28,7 @@ class Feedback(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String(50), nullable=True)
     email = Column(String(100), nullable=True, index=True)
+    mobile = Column(String(13), nullable=True)
     message = Column(String(500), nullable=False)
     rating = Column(Integer, nullable=True)
     created_at = Column(

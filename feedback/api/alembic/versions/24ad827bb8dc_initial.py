@@ -1,8 +1,8 @@
-"""Add timestamps to feedback
+"""initial
 
-Revision ID: af46aa92b26c
+Revision ID: 24ad827bb8dc
 Revises: 
-Create Date: 2025-10-15 10:23:17.280770
+Create Date: 2025-10-17 10:28:00.441739
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'af46aa92b26c'
+revision: str = '24ad827bb8dc'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
