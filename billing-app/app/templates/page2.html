@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Bill Generated Successfully</h1>
+
+<div class="success">
+    <strong>Email:</strong> {{ customer_email }}<br>
+    <strong>Date:</strong> {{ bill.created_at.strftime('%Y-%m-%d %H:%M:%S') if bill.created_at else 'N/A' }}
+</div>
+
+<h3>Bill Details</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Product ID</th>
+            <th>Unit Price</th>
+            <th>Qty</th>
+            <th>Purchase Price</th>
+            <th>Tax %</th>
+            <th>Tax Amount</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.product_id }}</td>
+            <td>Rs.{{ item.unit_price }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>Rs.{{ (item.unit_price * item.quantity)|round(2) }}</td>
+            <td>{{ item.tax_pct }}%</td>
+            <td>Rs.{{ ((item.unit_price * item.quantity) * (item.tax_pct / 100))|round(2) }}</td>
+            <td>Rs.{{ item.subtotal|round(2) }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="summary">
+    <h3>Summary</h3>
+    <p><strong>Total price without tax:</strong> Rs.{{ total_pre_tax }}</p>
+    <p><strong>Total tax payable:</strong> Rs.{{ total_tax }}</p>
+    <p><strong>Net price of item:</strong> Rs.{{ net_total }}</p>
+    <p><strong>Rounded down value:</strong> Rs.{{ rounded_total }}</p>
+    <p><strong>Cash paid by customer:</strong> Rs.{{ cash_paid }}</p>
+    <p><strong>Balance payable to customer:</strong> Rs.{{ change_due }}</p>
+</div>
+
+{% if balance_denoms %}
+<h3>Balance Denomination</h3>
+<div class="balance-grid">
+    {% for denom, count in balance_denoms.items()|sort(reverse=true) %}
+    {% if count > 0 %}
+    <div class="balance-item">
+        <div class="balance-count">{{ count }}</div>
+        <div>Rs.{{ denom }}</div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
+<div style="margin-top: 30px; display: flex; gap: 10px;">
+    <a href="/" style="background: #007bff; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">New Bill</a>
+    <a href="/history" style="background: #0056b3; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">View History</a>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+# Environment
+.env
+.env.local
+.venv/
+
+# Logs
+logs/
+logs/*.log
+*.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.pyc
+__pycache__/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Poetry
+poetry.lock

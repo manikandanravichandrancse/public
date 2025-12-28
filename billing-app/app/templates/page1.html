@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1>Billing Page</h1>
+    <a href="/history" style="background: #0056b3; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">View History</a>
+</div>
+
+{% if error %}
+<div class="error">
+    <strong>Error:</strong> {{ error }}
+</div>
+{% endif %}
+
+<form method="POST" action="/api/generate-bill" id="billingForm">
+    <div class="form-group">
+        <label>Customer Email:</label>
+        <input type="email" name="customer_email" placeholder="customer@example.com" required>
+    </div>
+
+    <h3>Bill Items</h3>
+    <div id="bill-items">
+        <div class="product-row">
+            <input type="text" name="product_id_0" placeholder="Product ID (P001, P002, P003)" oninput="calculateBill()" required>
+            <input type="number" name="quantity_0" placeholder="Quantity" min="1" oninput="calculateBill()" required>
+        </div>
+    </div>
+    <button type="button" onclick="addProductRow()" style="width: auto; margin-bottom: 30px;">Add New Item</button>
+
+    <!-- ✅ AMOUNT DUE SECTION -->
+    <div style="background: #f0f0f0; padding: 15px; border-radius: 8px; margin-bottom: 30px;">
+        <h3 style="margin-top: 0; color: #333;">Bill Summary</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+                <p style="margin: 0; color: #666; font-size: 14px;">Subtotal (before tax):</p>
+                <p style="margin: 5px 0 0 0; font-size: 18px; font-weight: bold; color: #333;">Rs.<span id="subtotal">0</span></p>
+            </div>
+            <div>
+                <p style="margin: 0; color: #666; font-size: 14px;">Total Tax (18%):</p>
+                <p style="margin: 5px 0 0 0; font-size: 18px; font-weight: bold; color: #333;">Rs.<span id="tax">0</span></p>
+            </div>
+            <div>
+                <p style="margin: 0; color: #666; font-size: 14px;">Net Total:</p>
+                <p style="margin: 5px 0 0 0; font-size: 18px; font-weight: bold; color: #333;">Rs.<span id="net_total">0</span></p>
+            </div>
+            <div style="background: #28a745; padding: 10px; border-radius: 5px;">
+                <p style="margin: 0; color: white; font-size: 14px;">AMOUNT DUE:</p>
+                <p style="margin: 5px 0 0 0; font-size: 24px; font-weight: bold; color: white;">Rs.<span id="amount_due">0</span></p>
+            </div>
+        </div>
+    </div>
+
+    <hr style="border: 2px solid #007bff; margin: 40px 0;">
+
+    <h3>Payment Details</h3>
+    
+    <div class="denominations">
+        {% for denom in [500, 50, 20, 10, 5, 2, 1] %}
+        <div class="denom-group">
+            <label>Rs.{{ denom }}</label>
+            <input type="number" name="denom_{{ denom }}" min="0" value="0" style="width: 60px;" oninput="calculateTotal()">
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="form-group">
+        <label>Total Denominations Value:</label>
+        <input type="number" name="denom_total" id="denom_total" step="0.01" value="0" style="background: #f0f0f0;" readonly>
+    </div>
+
+    <div class="form-group">
+        <label>Total Cash Paid:</label>
+        <input type="number" name="cash_paid" id="cash_paid" step="0.01" placeholder="0.00" oninput="validateCash()" required>
+    </div>
+
+    <!-- ✅ BALANCE DISPLAY -->
+    <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none;" id="balance_section">
+        <p style="margin: 0; color: #2e7d32; font-size: 14px;">Change to be given:</p>
+        <p style="margin: 5px 0 0 0; font-size: 20px; font-weight: bold; color: #2e7d32;">Rs.<span id="balance_amount">0</span></p>
+    </div>
+
+    <input type="hidden" name="items_json" id="items_json">
+    <button type="submit" style="background: #28a745; font-size: 18px; padding: 15px; width: 100%; cursor: pointer;">Generate Bill</button>
+</form>
+
+<script>
+let rowCounter = 1;
+
+// ✅ PRODUCT DATABASE
+const PRODUCTS = {
+    'P001': { name: 'Laptop', price: 50000, tax: 18 },
+    'P002': { name: 'Mouse', price: 500, tax: 18 },
+    'P003': { name: 'Keyboard', price: 2500, tax: 18 }
+};
+
+function addProductRow() {
+    const container = document.getElementById('bill-items');
+    const newRow = document.createElement('div');
+    newRow.className = 'product-row';
+    newRow.innerHTML = `
+        <input type="text" name="product_id_${rowCounter}" placeholder="Product ID" oninput="calculateBill()">
+        <input type="number" name="quantity_${rowCounter}" placeholder="Quantity" min="1" oninput="calculateBill()">
+    `;
+    container.appendChild(newRow);
+    rowCounter++;
+}
+
+// ✅ CALCULATE BILL ON ANY CHANGE (oninput instead of onchange)
+function calculateBill() {
+    let subtotal = 0;
+    let tax = 0;
+    let i = 0;
+    
+    while(true) {
+        const productInput = document.querySelector(`input[name="product_id_${i}"]`);
+        const quantityInput = document.querySelector(`input[name="quantity_${i}"]`);
+        
+        if(!productInput || !quantityInput) break;
+        
+        const productId = productInput.value.trim().toUpperCase();
+        const quantity = parseInt(quantityInput.value || 0);
+        
+        // ✅ DEBUG LOG
+        console.log(`Row ${i}: Product=${productId}, Qty=${quantity}, Found=${!!PRODUCTS[productId]}`);
+        
+        if(productId && PRODUCTS[productId] && quantity > 0) {
+            const price = PRODUCTS[productId].price;
+            const itemSubtotal = price * quantity;
+            const itemTax = itemSubtotal * (PRODUCTS[productId].tax / 100);
+            
+            console.log(`Row ${i}: Price=${price}, Subtotal=${itemSubtotal}, Tax=${itemTax}`);
+            
+            subtotal += itemSubtotal;
+            tax += itemTax;
+        }
+        i++;
+    }
+    
+    const netTotal = subtotal + tax;
+    const amountDue = Math.ceil(netTotal);
+    
+    console.log(`TOTAL: Subtotal=${subtotal}, Tax=${tax}, Net=${netTotal}, Due=${amountDue}`);
+    
+    // ✅ UPDATE DISPLAY
+    document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+    document.getElementById('tax').textContent = tax.toFixed(2);
+    document.getElementById('net_total').textContent = netTotal.toFixed(2);
+    document.getElementById('amount_due').textContent = amountDue;
+}
+
+// ✅ CALCULATE TOTAL FROM DENOMINATIONS
+function calculateTotal() {
+    const denoms = [500, 50, 20, 10, 5, 2, 1];
+    let total = 0;
+    
+    denoms.forEach(denom => {
+        const input = document.querySelector(`input[name="denom_${denom}"]`);
+        if (input) {
+            total += denom * parseInt(input.value || 0);
+        }
+    });
+    
+    document.getElementById('denom_total').value = total.toFixed(2);
+    document.getElementById('cash_paid').value = total.toFixed(2);
+    
+    // ✅ SHOW BALANCE IF CASH >= AMOUNT DUE
+    const amountDue = parseInt(document.getElementById('amount_due').textContent);
+    if (total > 0) {
+        const balance = total - amountDue;
+        if (balance >= 0) {
+            document.getElementById('balance_section').style.display = 'block';
+            document.getElementById('balance_amount').textContent = balance.toFixed(2);
+        } else {
+            document.getElementById('balance_section').style.display = 'none';
+        }
+    } else {
+        document.getElementById('balance_section').style.display = 'none';
+    }
+}
+
+function validateCash() {
+    const cashInput = document.getElementById('cash_paid');
+    const cashValue = parseFloat(cashInput.value || 0);
+    
+    if (cashValue < 0) {
+        alert('Cash paid cannot be negative');
+        cashInput.value = '0';
+    }
+    
+    // ✅ SHOW BALANCE
+    const amountDue = parseInt(document.getElementById('amount_due').textContent);
+    if (cashValue > 0) {
+        const balance = cashValue - amountDue;
+        if (balance >= 0) {
+            document.getElementById('balance_section').style.display = 'block';
+            document.getElementById('balance_amount').textContent = balance.toFixed(2);
+        } else {
+            document.getElementById('balance_section').style.display = 'none';
+        }
+    } else {
+        document.getElementById('balance_section').style.display = 'none';
+    }
+}
+
+document.getElementById('billingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const email = document.querySelector('input[name="customer_email"]').value.trim();
+    if (!email) {
+        alert('Please enter customer email');
+        return;
+    }
+    
+    const items = [];
+    let i = 0;
+    
+    while(true) {
+        const productInput = document.querySelector(`input[name="product_id_${i}"]`);
+        const quantityInput = document.querySelector(`input[name="quantity_${i}"]`);
+        
+        if(!productInput || !quantityInput) break;
+        
+        const productId = productInput.value.trim().toUpperCase();
+        const quantity = parseInt(quantityInput.value);
+        
+        if(productId && quantity > 0) {
+            items.push({product_id: productId, quantity: quantity});
+        }
+        i++;
+    }
+    
+    if(items.length === 0) {
+        alert('Please add at least one product');
+        return;
+    }
+    
+    const cashPaid = parseFloat(document.querySelector('input[name="cash_paid"]').value);
+    if (!cashPaid || cashPaid <= 0) {
+        alert('Please enter valid cash amount');
+        return;
+    }
+    
+    document.getElementById('items_json').value = JSON.stringify(items);
+    this.submit();
+});
+
+// ✅ INITIAL CALCULATION
+calculateBill();
+</script>
+{% endblock %}

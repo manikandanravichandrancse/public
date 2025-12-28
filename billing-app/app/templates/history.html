@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1>Bill History</h1>
+    <a href="/" style="background: #007bff; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">New Bill</a>
+</div>
+
+<div class="form-group" style="max-width: 400px;">
+    <label>Enter Customer Email:</label>
+    <input type="email" id="email" placeholder="customer@example.com">
+    <button onclick="loadHistory()" style="width: auto; margin-top: 10px; background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Load History</button>
+</div>
+
+<div id="history-results" style="margin-top: 30px;"></div>
+
+<script>
+async function loadHistory() {
+    const email = document.getElementById('email').value.trim();
+    if (!email) {
+        alert('Please enter an email');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/bills/${email}`);
+        const data = await response.json();
+        
+        if (!data.bills || data.bills.length === 0) {
+            document.getElementById('history-results').innerHTML = '<p style="color: #666;">No bills found for this email</p>';
+            return;
+        }
+        
+        let html = '<h3>Previous Bills for ' + email + '</h3><table style="width: 100%; border-collapse: collapse;"><thead><tr style="background: #f5f5f5;"><th style="padding: 10px; border: 1px solid #ddd;">Bill ID</th><th style="padding: 10px; border: 1px solid #ddd;">Amount (Rs.)</th><th style="padding: 10px; border: 1px solid #ddd;">Date & Time</th></tr></thead><tbody>';
+        data.bills.forEach(bill => {
+            const date = new Date(bill.created_at).toLocaleString('en-IN');
+            const billId = bill.id.substring(0, 8) + '...';
+            html += `<tr><td style="padding: 10px; border: 1px solid #ddd;">${billId}</td><td style="padding: 10px; border: 1px solid #ddd;">Rs.${bill.rounded_total}</td><td style="padding: 10px; border: 1px solid #ddd;">${date}</td></tr>`;
+        });
+        html += '</tbody></table>';
+        document.getElementById('history-results').innerHTML = html;
+    } catch(error) {
+        document.getElementById('history-results').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+    }
+}
+</script>
+{% endblock %}
